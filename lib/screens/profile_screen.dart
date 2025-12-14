@@ -23,12 +23,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   UserProfile? _userProfile;
   bool _isLoading = true;
   bool _notificationsEnabled = true;
+  Map<String, String> _googleUserData = {};
 
   @override
   void initState() {
     super.initState();
     _loadProfile();
     _loadNotificationSettings();
+    _loadGoogleUserData();
   }
 
   Future<void> _loadProfile() async {
@@ -37,6 +39,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _userProfile = profile;
       _isLoading = false;
     });
+  }
+
+  Future<void> _loadGoogleUserData() async {
+    final authService = AuthService();
+    final userData = await authService.getSavedUserData();
+    if (mounted) {
+      setState(() {
+        _googleUserData = userData;
+      });
+    }
   }
 
   Future<void> _loadNotificationSettings() async {
@@ -99,8 +111,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildUserCard(BuildContext context, bool isDark) {
     final authService = AuthService();
     final firebaseUser = authService.currentUser;
-    final displayName = firebaseUser?.displayName ?? _userProfile?.displayName ?? 'Пользователь';
-    final email = firebaseUser?.email ?? _userProfile?.email;
+    
+    // Приоритет данных: Firebase User > Saved Google Data > UserProfile
+    final displayName = firebaseUser?.displayName ?? 
+                       _googleUserData['name'] ?? 
+                       _userProfile?.displayName ?? 
+                       AppLocalizations.of(context).translate('user') ?? 'Пользователь';
+    
+    final email = firebaseUser?.email ?? 
+                 _googleUserData['email'] ?? 
+                 _userProfile?.email;
+    
+    final photoUrl = firebaseUser?.photoURL ?? _googleUserData['photo'];
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -117,26 +139,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Row(
         children: [
-          // Avatar
+          // Avatar with Google Photo
           Container(
-            width: 60,
-            height: 60,
+            width: 64,
+            height: 64,
             decoration: BoxDecoration(
               color: const Color(0xFF4CAF50),
               shape: BoxShape.circle,
-              image: firebaseUser?.photoURL != null
+              border: Border.all(
+                color: const Color(0xFF4CAF50),
+                width: 2,
+              ),
+              image: photoUrl != null && photoUrl.isNotEmpty
                   ? DecorationImage(
-                      image: NetworkImage(firebaseUser!.photoURL!),
+                      image: NetworkImage(photoUrl),
                       fit: BoxFit.cover,
                     )
                   : null,
             ),
-            child: firebaseUser?.photoURL == null
+            child: photoUrl == null || photoUrl.isEmpty
                 ? Center(
                     child: Text(
                       displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U',
                       style: const TextStyle(
-                        fontSize: 24,
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -145,7 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 : null,
           ),
           const SizedBox(width: 16),
-          // User Info
+          // User Info from Google Account
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,16 +183,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fontWeight: FontWeight.bold,
                     color: isDark ? Colors.white : Colors.black87,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                if (email != null) ...[
+                if (email != null && email.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
                     email,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       color: isDark ? Colors.grey[400] : Colors.grey[600],
                     ),
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+                // Google Account badge
+                if (firebaseUser != null && !firebaseUser.isAnonymous) ...[
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.verified_user,
+                        size: 14,
+                        color: const Color(0xFF4CAF50),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Google Account',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: const Color(0xFF4CAF50),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ],

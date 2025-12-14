@@ -108,6 +108,7 @@ class AppLocalizations {
     
     // Профиль
     'profile': 'Профиль',
+    'user': 'Пользователь',
     'personal_info': 'Личная информация',
     'complete_profile': 'Заполните профиль для персонализированного опыта',
     'edit_profile': 'Редактировать профиль',
@@ -260,6 +261,7 @@ class AppLocalizations {
     
     // Profile
     'profile': 'Profile',
+    'user': 'User',
     'personal_info': 'Personal information',
     'complete_profile': 'Complete your profile for personalized experience',
     'edit_profile': 'Edit profile',
@@ -412,6 +414,7 @@ class AppLocalizations {
     
     // Profil
     'profile': 'Profil',
+    'user': 'Utilisateur',
     'personal_info': 'Informations personnelles',
     'complete_profile': 'Complétez votre profil pour une expérience personnalisée',
     'edit_profile': 'Modifier le profil',
@@ -564,6 +567,7 @@ class AppLocalizations {
     
     // Profil
     'profile': 'Profil',
+    'user': 'Benutzer',
     'personal_info': 'Persönliche Informationen',
     'complete_profile': 'Vervollständigen Sie Ihr Profil für personalisierte Erfahrung',
     'edit_profile': 'Profil bearbeiten',

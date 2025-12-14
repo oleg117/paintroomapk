@@ -43,7 +43,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Firebase configuration (keep these for deployment)
-# Uncomment if you don't want to share Firebase config
-# google-services.json
-# firebase_options.dart
+# Logs
+*.log
+flutter.log
+server.log
