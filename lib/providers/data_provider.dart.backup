@@ -1,0 +1,600 @@
+import 'package:flutter/material.dart';
+import '../models/country.dart';
+import '../models/service_category.dart';
+import '../models/calculator_item.dart';
+
+class DataProvider extends ChangeNotifier {
+  List<Country> _countries = [];
+  List<ServiceCategory> _categories = [];
+  final List<CalculatorItem> _calculatorItems = [];
+  String? _selectedCountryCode;
+  bool _isLoading = false;
+
+  List<Country> get countries => _countries;
+  List<ServiceCategory> get categories => _categories;
+  List<CalculatorItem> get calculatorItems => _calculatorItems;
+  String? get selectedCountryCode => _selectedCountryCode;
+  bool get isLoading => _isLoading;
+
+  Country? get selectedCountry {
+    if (_selectedCountryCode == null) return null;
+    try {
+      return _countries.firstWhere((c) => c.code == _selectedCountryCode);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  double get calculatorTotal {
+    return _calculatorItems.fold(0.0, (sum, item) => sum + item.total);
+  }
+
+  void selectCountry(String countryCode) {
+    _selectedCountryCode = countryCode;
+    notifyListeners();
+  }
+
+  void addCalculatorItem(CalculatorItem item) {
+    _calculatorItems.add(item);
+    notifyListeners();
+  }
+
+  void updateCalculatorItem(int index, CalculatorItem item) {
+    if (index >= 0 && index < _calculatorItems.length) {
+      _calculatorItems[index] = item;
+      notifyListeners();
+    }
+  }
+
+  void removeCalculatorItem(int index) {
+    if (index >= 0 && index < _calculatorItems.length) {
+      _calculatorItems.removeAt(index);
+      notifyListeners();
+    }
+  }
+
+  void clearCalculator() {
+    _calculatorItems.clear();
+    notifyListeners();
+  }
+
+  Future<void> loadData() async {
+    _isLoading = true;
+    notifyListeners();
+
+    // Загрузка данных по странам
+    _countries = _getEuropeanCountries();
+    
+    // Загрузка категорий услуг
+    _categories = _getServiceCategories();
+    
+    // Установка страны по умолчанию
+    if (_selectedCountryCode == null && _countries.isNotEmpty) {
+      _selectedCountryCode = _countries.first.code;
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  List<Country> _getEuropeanCountries() {
+    return [
+      Country(
+        id: 'de',
+        name: 'Germany',
+        nameRu: 'Германия',
+        code: 'DE',
+        flagEmoji: '🇩🇪',
+        averagePricePerSqm: 1850.0,
+      ),
+      Country(
+        id: 'fr',
+        name: 'France',
+        nameRu: 'Франция',
+        code: 'FR',
+        flagEmoji: '🇫🇷',
+        averagePricePerSqm: 1750.0,
+      ),
+      Country(
+        id: 'it',
+        name: 'Italy',
+        nameRu: 'Италия',
+        code: 'IT',
+        flagEmoji: '🇮🇹',
+        averagePricePerSqm: 1650.0,
+      ),
+      Country(
+        id: 'es',
+        name: 'Spain',
+        nameRu: 'Испания',
+        code: 'ES',
+        flagEmoji: '🇪🇸',
+        averagePricePerSqm: 1450.0,
+      ),
+      Country(
+        id: 'pl',
+        name: 'Poland',
+        nameRu: 'Польша',
+        code: 'PL',
+        flagEmoji: '🇵🇱',
+        averagePricePerSqm: 1200.0,
+      ),
+      Country(
+        id: 'nl',
+        name: 'Netherlands',
+        nameRu: 'Нидерланды',
+        code: 'NL',
+        flagEmoji: '🇳🇱',
+        averagePricePerSqm: 2100.0,
+      ),
+      Country(
+        id: 'be',
+        name: 'Belgium',
+        nameRu: 'Бельгия',
+        code: 'BE',
+        flagEmoji: '🇧🇪',
+        averagePricePerSqm: 1900.0,
+      ),
+      Country(
+        id: 'at',
+        name: 'Austria',
+        nameRu: 'Австрия',
+        code: 'AT',
+        flagEmoji: '🇦🇹',
+        averagePricePerSqm: 1950.0,
+      ),
+      Country(
+        id: 'ch',
+        name: 'Switzerland',
+        nameRu: 'Швейцария',
+        code: 'CH',
+        flagEmoji: '🇨🇭',
+        averagePricePerSqm: 2800.0,
+        currency: 'CHF',
+      ),
+      Country(
+        id: 'cz',
+        name: 'Czech Republic',
+        nameRu: 'Чехия',
+        code: 'CZ',
+        flagEmoji: '🇨🇿',
+        averagePricePerSqm: 1350.0,
+      ),
+      Country(
+        id: 'pt',
+        name: 'Portugal',
+        nameRu: 'Португалия',
+        code: 'PT',
+        flagEmoji: '🇵🇹',
+        averagePricePerSqm: 1250.0,
+      ),
+      Country(
+        id: 'se',
+        name: 'Sweden',
+        nameRu: 'Швеция',
+        code: 'SE',
+        flagEmoji: '🇸🇪',
+        averagePricePerSqm: 2200.0,
+      ),
+      Country(
+        id: 'dk',
+        name: 'Denmark',
+        nameRu: 'Дания',
+        code: 'DK',
+        flagEmoji: '🇩🇰',
+        averagePricePerSqm: 2300.0,
+      ),
+      Country(
+        id: 'no',
+        name: 'Norway',
+        nameRu: 'Норвегия',
+        code: 'NO',
+        flagEmoji: '🇳🇴',
+        averagePricePerSqm: 2500.0,
+      ),
+      Country(
+        id: 'fi',
+        name: 'Finland',
+        nameRu: 'Финляндия',
+        code: 'FI',
+        flagEmoji: '🇫🇮',
+        averagePricePerSqm: 2000.0,
+      ),
+    ];
+  }
+
+  List<ServiceCategory> _getServiceCategories() {
+    return [
+      ServiceCategory(
+        id: 'painting',
+        name: 'Painting Works',
+        nameRu: 'Малярные работы',
+        description: 'Interior and exterior painting',
+        descriptionRu: 'Внутренние и наружные покрасочные работы',
+        icon: Icons.format_paint,
+        color: const Color(0xFFFFC107),
+        services: _getPaintingServices(),
+      ),
+      ServiceCategory(
+        id: 'electrical',
+        name: 'Electrical Works',
+        nameRu: 'Электромонтажные работы',
+        description: 'Electrical installation and wiring',
+        descriptionRu: 'Электромонтаж и проводка',
+        icon: Icons.electric_bolt,
+        color: const Color(0xFF2196F3),
+        services: _getElectricalServices(),
+      ),
+      ServiceCategory(
+        id: 'plumbing',
+        name: 'Plumbing Works',
+        nameRu: 'Сантехнические работы',
+        description: 'Water supply and drainage',
+        descriptionRu: 'Водоснабжение и канализация',
+        icon: Icons.plumbing,
+        color: const Color(0xFF4CAF50),
+        services: _getPlumbingServices(),
+      ),
+      ServiceCategory(
+        id: 'flooring',
+        name: 'Flooring Works',
+        nameRu: 'Напольные покрытия',
+        description: 'Floor installation and finishing',
+        descriptionRu: 'Укладка и отделка полов',
+        icon: Icons.layers,
+        color: const Color(0xFF9C27B0),
+        services: _getFlooringServices(),
+      ),
+      ServiceCategory(
+        id: 'tiling',
+        name: 'Tiling Works',
+        nameRu: 'Облицовочные работы',
+        description: 'Wall and floor tiling',
+        descriptionRu: 'Облицовка стен и полов плиткой',
+        icon: Icons.grid_on,
+        color: const Color(0xFFFF5722),
+        services: _getTilingServices(),
+      ),
+      ServiceCategory(
+        id: 'carpentry',
+        name: 'Carpentry Works',
+        nameRu: 'Столярные работы',
+        description: 'Woodwork and furniture',
+        descriptionRu: 'Деревянные конструкции и мебель',
+        icon: Icons.carpenter,
+        color: const Color(0xFF795548),
+        services: _getCarpentryServices(),
+      ),
+    ];
+  }
+
+  List<ServiceItem> _getPaintingServices() {
+    return [
+      ServiceItem(
+        id: 'painting_interior_walls',
+        categoryId: 'painting',
+        name: 'Interior Wall Painting',
+        nameRu: 'Покраска внутренних стен',
+        unit: 'sqm',
+        unitRu: 'м²',
+        pricesByCountry: {
+          'DE': PriceRange(min: 15, max: 30, average: 22),
+          'FR': PriceRange(min: 14, max: 28, average: 20),
+          'IT': PriceRange(min: 12, max: 25, average: 18),
+          'ES': PriceRange(min: 10, max: 22, average: 16),
+          'PL': PriceRange(min: 8, max: 18, average: 13),
+          'NL': PriceRange(min: 18, max: 35, average: 26),
+          'BE': PriceRange(min: 16, max: 32, average: 24),
+          'AT': PriceRange(min: 16, max: 32, average: 24),
+          'CH': PriceRange(min: 25, max: 50, average: 37),
+          'CZ': PriceRange(min: 9, max: 20, average: 14),
+          'PT': PriceRange(min: 9, max: 20, average: 14),
+          'SE': PriceRange(min: 20, max: 40, average: 30),
+          'DK': PriceRange(min: 22, max: 42, average: 32),
+          'NO': PriceRange(min: 24, max: 45, average: 34),
+          'FI': PriceRange(min: 19, max: 38, average: 28),
+        },
+      ),
+      ServiceItem(
+        id: 'painting_ceiling',
+        categoryId: 'painting',
+        name: 'Ceiling Painting',
+        nameRu: 'Покраска потолков',
+        unit: 'sqm',
+        unitRu: 'м²',
+        pricesByCountry: {
+          'DE': PriceRange(min: 18, max: 35, average: 26),
+          'FR': PriceRange(min: 17, max: 33, average: 25),
+          'IT': PriceRange(min: 15, max: 30, average: 22),
+          'ES': PriceRange(min: 13, max: 26, average: 19),
+          'PL': PriceRange(min: 10, max: 22, average: 16),
+          'NL': PriceRange(min: 21, max: 40, average: 30),
+          'BE': PriceRange(min: 19, max: 37, average: 28),
+          'AT': PriceRange(min: 19, max: 37, average: 28),
+          'CH': PriceRange(min: 30, max: 58, average: 44),
+          'CZ': PriceRange(min: 11, max: 24, average: 17),
+          'PT': PriceRange(min: 11, max: 24, average: 17),
+          'SE': PriceRange(min: 24, max: 46, average: 35),
+          'DK': PriceRange(min: 26, max: 48, average: 37),
+          'NO': PriceRange(min: 28, max: 52, average: 40),
+          'FI': PriceRange(min: 22, max: 44, average: 33),
+        },
+      ),
+    ];
+  }
+
+  List<ServiceItem> _getElectricalServices() {
+    return [
+      ServiceItem(
+        id: 'electrical_outlet',
+        categoryId: 'electrical',
+        name: 'Electrical Outlet Installation',
+        nameRu: 'Установка розетки',
+        unit: 'piece',
+        unitRu: 'шт',
+        pricesByCountry: {
+          'DE': PriceRange(min: 50, max: 120, average: 85),
+          'FR': PriceRange(min: 45, max: 110, average: 77),
+          'IT': PriceRange(min: 40, max: 100, average: 70),
+          'ES': PriceRange(min: 35, max: 85, average: 60),
+          'PL': PriceRange(min: 25, max: 60, average: 42),
+          'NL': PriceRange(min: 60, max: 140, average: 100),
+          'BE': PriceRange(min: 55, max: 130, average: 92),
+          'AT': PriceRange(min: 55, max: 130, average: 92),
+          'CH': PriceRange(min: 80, max: 180, average: 130),
+          'CZ': PriceRange(min: 30, max: 70, average: 50),
+          'PT': PriceRange(min: 30, max: 70, average: 50),
+          'SE': PriceRange(min: 65, max: 150, average: 107),
+          'DK': PriceRange(min: 70, max: 160, average: 115),
+          'NO': PriceRange(min: 75, max: 170, average: 122),
+          'FI': PriceRange(min: 60, max: 145, average: 102),
+        },
+      ),
+      ServiceItem(
+        id: 'electrical_switch',
+        categoryId: 'electrical',
+        name: 'Light Switch Installation',
+        nameRu: 'Установка выключателя',
+        unit: 'piece',
+        unitRu: 'шт',
+        pricesByCountry: {
+          'DE': PriceRange(min: 45, max: 110, average: 77),
+          'FR': PriceRange(min: 40, max: 100, average: 70),
+          'IT': PriceRange(min: 35, max: 90, average: 62),
+          'ES': PriceRange(min: 30, max: 75, average: 52),
+          'PL': PriceRange(min: 22, max: 55, average: 38),
+          'NL': PriceRange(min: 55, max: 130, average: 92),
+          'BE': PriceRange(min: 50, max: 120, average: 85),
+          'AT': PriceRange(min: 50, max: 120, average: 85),
+          'CH': PriceRange(min: 75, max: 165, average: 120),
+          'CZ': PriceRange(min: 27, max: 65, average: 46),
+          'PT': PriceRange(min: 27, max: 65, average: 46),
+          'SE': PriceRange(min: 60, max: 140, average: 100),
+          'DK': PriceRange(min: 65, max: 150, average: 107),
+          'NO': PriceRange(min: 70, max: 160, average: 115),
+          'FI': PriceRange(min: 55, max: 135, average: 95),
+        },
+      ),
+    ];
+  }
+
+  List<ServiceItem> _getPlumbingServices() {
+    return [
+      ServiceItem(
+        id: 'plumbing_sink',
+        categoryId: 'plumbing',
+        name: 'Sink Installation',
+        nameRu: 'Установка раковины',
+        unit: 'piece',
+        unitRu: 'шт',
+        pricesByCountry: {
+          'DE': PriceRange(min: 120, max: 280, average: 200),
+          'FR': PriceRange(min: 110, max: 260, average: 185),
+          'IT': PriceRange(min: 100, max: 240, average: 170),
+          'ES': PriceRange(min: 85, max: 200, average: 142),
+          'PL': PriceRange(min: 60, max: 150, average: 105),
+          'NL': PriceRange(min: 140, max: 320, average: 230),
+          'BE': PriceRange(min: 130, max: 300, average: 215),
+          'AT': PriceRange(min: 130, max: 300, average: 215),
+          'CH': PriceRange(min: 200, max: 420, average: 310),
+          'CZ': PriceRange(min: 70, max: 170, average: 120),
+          'PT': PriceRange(min: 70, max: 170, average: 120),
+          'SE': PriceRange(min: 150, max: 340, average: 245),
+          'DK': PriceRange(min: 160, max: 360, average: 260),
+          'NO': PriceRange(min: 170, max: 380, average: 275),
+          'FI': PriceRange(min: 145, max: 330, average: 237),
+        },
+      ),
+      ServiceItem(
+        id: 'plumbing_toilet',
+        categoryId: 'plumbing',
+        name: 'Toilet Installation',
+        nameRu: 'Установка унитаза',
+        unit: 'piece',
+        unitRu: 'шт',
+        pricesByCountry: {
+          'DE': PriceRange(min: 150, max: 350, average: 250),
+          'FR': PriceRange(min: 140, max: 330, average: 235),
+          'IT': PriceRange(min: 130, max: 310, average: 220),
+          'ES': PriceRange(min: 110, max: 260, average: 185),
+          'PL': PriceRange(min: 80, max: 190, average: 135),
+          'NL': PriceRange(min: 170, max: 400, average: 285),
+          'BE': PriceRange(min: 160, max: 380, average: 270),
+          'AT': PriceRange(min: 160, max: 380, average: 270),
+          'CH': PriceRange(min: 250, max: 530, average: 390),
+          'CZ': PriceRange(min: 90, max: 220, average: 155),
+          'PT': PriceRange(min: 90, max: 220, average: 155),
+          'SE': PriceRange(min: 180, max: 420, average: 300),
+          'DK': PriceRange(min: 190, max: 440, average: 315),
+          'NO': PriceRange(min: 200, max: 460, average: 330),
+          'FI': PriceRange(min: 175, max: 410, average: 292),
+        },
+      ),
+    ];
+  }
+
+  List<ServiceItem> _getFlooringServices() {
+    return [
+      ServiceItem(
+        id: 'flooring_laminate',
+        categoryId: 'flooring',
+        name: 'Laminate Flooring Installation',
+        nameRu: 'Укладка ламината',
+        unit: 'sqm',
+        unitRu: 'м²',
+        pricesByCountry: {
+          'DE': PriceRange(min: 25, max: 50, average: 37),
+          'FR': PriceRange(min: 23, max: 47, average: 35),
+          'IT': PriceRange(min: 20, max: 42, average: 31),
+          'ES': PriceRange(min: 18, max: 38, average: 28),
+          'PL': PriceRange(min: 12, max: 28, average: 20),
+          'NL': PriceRange(min: 30, max: 58, average: 44),
+          'BE': PriceRange(min: 27, max: 54, average: 40),
+          'AT': PriceRange(min: 27, max: 54, average: 40),
+          'CH': PriceRange(min: 42, max: 78, average: 60),
+          'CZ': PriceRange(min: 15, max: 32, average: 23),
+          'PT': PriceRange(min: 15, max: 32, average: 23),
+          'SE': PriceRange(min: 33, max: 62, average: 47),
+          'DK': PriceRange(min: 35, max: 65, average: 50),
+          'NO': PriceRange(min: 37, max: 68, average: 52),
+          'FI': PriceRange(min: 32, max: 60, average: 46),
+        },
+      ),
+      ServiceItem(
+        id: 'flooring_parquet',
+        categoryId: 'flooring',
+        name: 'Parquet Flooring Installation',
+        nameRu: 'Укладка паркета',
+        unit: 'sqm',
+        unitRu: 'м²',
+        pricesByCountry: {
+          'DE': PriceRange(min: 40, max: 80, average: 60),
+          'FR': PriceRange(min: 38, max: 76, average: 57),
+          'IT': PriceRange(min: 35, max: 70, average: 52),
+          'ES': PriceRange(min: 30, max: 62, average: 46),
+          'PL': PriceRange(min: 22, max: 48, average: 35),
+          'NL': PriceRange(min: 48, max: 92, average: 70),
+          'BE': PriceRange(min: 44, max: 86, average: 65),
+          'AT': PriceRange(min: 44, max: 86, average: 65),
+          'CH': PriceRange(min: 65, max: 125, average: 95),
+          'CZ': PriceRange(min: 26, max: 55, average: 40),
+          'PT': PriceRange(min: 26, max: 55, average: 40),
+          'SE': PriceRange(min: 52, max: 98, average: 75),
+          'DK': PriceRange(min: 55, max: 103, average: 79),
+          'NO': PriceRange(min: 58, max: 108, average: 83),
+          'FI': PriceRange(min: 50, max: 96, average: 73),
+        },
+      ),
+    ];
+  }
+
+  List<ServiceItem> _getTilingServices() {
+    return [
+      ServiceItem(
+        id: 'tiling_floor',
+        categoryId: 'tiling',
+        name: 'Floor Tiling',
+        nameRu: 'Облицовка пола плиткой',
+        unit: 'sqm',
+        unitRu: 'м²',
+        pricesByCountry: {
+          'DE': PriceRange(min: 35, max: 70, average: 52),
+          'FR': PriceRange(min: 33, max: 66, average: 49),
+          'IT': PriceRange(min: 30, max: 60, average: 45),
+          'ES': PriceRange(min: 25, max: 52, average: 38),
+          'PL': PriceRange(min: 18, max: 40, average: 29),
+          'NL': PriceRange(min: 42, max: 82, average: 62),
+          'BE': PriceRange(min: 38, max: 76, average: 57),
+          'AT': PriceRange(min: 38, max: 76, average: 57),
+          'CH': PriceRange(min: 58, max: 110, average: 84),
+          'CZ': PriceRange(min: 22, max: 46, average: 34),
+          'PT': PriceRange(min: 22, max: 46, average: 34),
+          'SE': PriceRange(min: 45, max: 88, average: 66),
+          'DK': PriceRange(min: 48, max: 92, average: 70),
+          'NO': PriceRange(min: 50, max: 96, average: 73),
+          'FI': PriceRange(min: 43, max: 85, average: 64),
+        },
+      ),
+      ServiceItem(
+        id: 'tiling_wall',
+        categoryId: 'tiling',
+        name: 'Wall Tiling',
+        nameRu: 'Облицовка стен плиткой',
+        unit: 'sqm',
+        unitRu: 'м²',
+        pricesByCountry: {
+          'DE': PriceRange(min: 40, max: 80, average: 60),
+          'FR': PriceRange(min: 38, max: 76, average: 57),
+          'IT': PriceRange(min: 35, max: 70, average: 52),
+          'ES': PriceRange(min: 30, max: 62, average: 46),
+          'PL': PriceRange(min: 22, max: 48, average: 35),
+          'NL': PriceRange(min: 48, max: 92, average: 70),
+          'BE': PriceRange(min: 44, max: 86, average: 65),
+          'AT': PriceRange(min: 44, max: 86, average: 65),
+          'CH': PriceRange(min: 65, max: 125, average: 95),
+          'CZ': PriceRange(min: 26, max: 55, average: 40),
+          'PT': PriceRange(min: 26, max: 55, average: 40),
+          'SE': PriceRange(min: 52, max: 98, average: 75),
+          'DK': PriceRange(min: 55, max: 103, average: 79),
+          'NO': PriceRange(min: 58, max: 108, average: 83),
+          'FI': PriceRange(min: 50, max: 96, average: 73),
+        },
+      ),
+    ];
+  }
+
+  List<ServiceItem> _getCarpentryServices() {
+    return [
+      ServiceItem(
+        id: 'carpentry_door',
+        categoryId: 'carpentry',
+        name: 'Door Installation',
+        nameRu: 'Установка двери',
+        unit: 'piece',
+        unitRu: 'шт',
+        pricesByCountry: {
+          'DE': PriceRange(min: 180, max: 400, average: 290),
+          'FR': PriceRange(min: 170, max: 380, average: 275),
+          'IT': PriceRange(min: 160, max: 360, average: 260),
+          'ES': PriceRange(min: 140, max: 320, average: 230),
+          'PL': PriceRange(min: 100, max: 240, average: 170),
+          'NL': PriceRange(min: 210, max: 460, average: 335),
+          'BE': PriceRange(min: 195, max: 435, average: 315),
+          'AT': PriceRange(min: 195, max: 435, average: 315),
+          'CH': PriceRange(min: 300, max: 620, average: 460),
+          'CZ': PriceRange(min: 115, max: 275, average: 195),
+          'PT': PriceRange(min: 115, max: 275, average: 195),
+          'SE': PriceRange(min: 225, max: 490, average: 357),
+          'DK': PriceRange(min: 240, max: 515, average: 377),
+          'NO': PriceRange(min: 250, max: 540, average: 395),
+          'FI': PriceRange(min: 220, max: 480, average: 350),
+        },
+      ),
+      ServiceItem(
+        id: 'carpentry_window',
+        categoryId: 'carpentry',
+        name: 'Window Installation',
+        nameRu: 'Установка окна',
+        unit: 'piece',
+        unitRu: 'шт',
+        pricesByCountry: {
+          'DE': PriceRange(min: 250, max: 550, average: 400),
+          'FR': PriceRange(min: 240, max: 530, average: 385),
+          'IT': PriceRange(min: 220, max: 500, average: 360),
+          'ES': PriceRange(min: 190, max: 440, average: 315),
+          'PL': PriceRange(min: 140, max: 330, average: 235),
+          'NL': PriceRange(min: 290, max: 630, average: 460),
+          'BE': PriceRange(min: 270, max: 600, average: 435),
+          'AT': PriceRange(min: 270, max: 600, average: 435),
+          'CH': PriceRange(min: 420, max: 850, average: 635),
+          'CZ': PriceRange(min: 160, max: 380, average: 270),
+          'PT': PriceRange(min: 160, max: 380, average: 270),
+          'SE': PriceRange(min: 310, max: 670, average: 490),
+          'DK': PriceRange(min: 330, max: 710, average: 520),
+          'NO': PriceRange(min: 350, max: 740, average: 545),
+          'FI': PriceRange(min: 305, max: 660, average: 482),
+        },
+      ),
+    ];
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "516082565964",
+    "project_id": "eu-paintroom-paintroom",
+    "storage_bucket": "eu-paintroom-paintroom.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:516082565964:android:8a3c62e5877f1d8b6345e9",
+        "android_client_info": {
+          "package_name": "eu.paintroom.paintroom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "516082565964-b0cga31evlq0b41nseae1bdr4h982hk4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzafW_8P40LWnAJkfzoBq1Diujpnl1OKg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "516082565964-b0cga31evlq0b41nseae1bdr4h982hk4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
